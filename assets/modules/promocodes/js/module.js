@@ -413,12 +413,15 @@ const Module = {
     },
     edit: function (id) {
         const module = this;
+        const loader = $('#mainloader', window.parent.document);
+        loader.addClass('show');
         $.post(
             connector,
             {
                 mode: 'get',
                 id: id
             }, function (response) {
+                loader.removeClass('show');
                 if (response.status) {
                     const tpl = $('#editForm').html();
                     const form = parseTemplate(tpl, {
@@ -509,6 +512,7 @@ const Module = {
             },
             'json'
         ).fail(function () {
+            loader.removeClass('show');
             $.messager.alert('Ошибка', 'Произошла ошибка', 'error');
         });
     },
