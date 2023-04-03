@@ -1,0 +1,6 @@
+vendor
+.vagrant
+composer.lock
+*.komodoproject
+manifest
+.phpunit.result.cache

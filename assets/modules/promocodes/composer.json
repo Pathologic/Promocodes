@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "ilario-pierbattista/reverse-regex": "^0.2.0"
+    }
+}
