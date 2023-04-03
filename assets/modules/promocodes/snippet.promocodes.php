@@ -21,7 +21,7 @@ $_templatePath = $DLTemplate->getTemplatePath();
 $_templateExtension = $DLTemplate->getTemplateExtension();
 $out = '';
 if ($tpl) {
-    $promocode = ci()->promocodes->get('instance');
+    $promocode = ci()->promocodes->get($instance);
     $out = $DLTemplate->parseChunk($tpl, [
         'instance'  => $instance,
         'promocode' => $promocode ?: '',
