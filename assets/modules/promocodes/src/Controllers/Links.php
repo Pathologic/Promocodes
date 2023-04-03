@@ -22,7 +22,6 @@ class Links
             'idType'         => 'documents',
             'ignoreEmpty'    => true,
             'makeUrl'        => false,
-            'display'        => 15,
             'selectFields'   => 'c.id,c.link,sc.pagetitle',
             'returnDLObject' => true
         ];
