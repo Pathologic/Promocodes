@@ -36,12 +36,20 @@ class Model extends \autoTable
     protected $productsLinks = [];
     public $pattern = '[A-Z0-9]{10}';
 
+    /**
+     * @param  string  $pattern
+     * @param  array  $data
+     * @param  int  $maxAmount
+     * @param $fire_events
+     * @return array
+     * @throws \Exception
+     */
     public function generate(string $pattern, array $data, int $maxAmount, $fire_events = true)
     {
         $lexer = new Lexer($pattern);
         $randomizer = new MersenneRandom();
         $parser = new Parser($lexer, new Scope(), new Scope());
-        $generated = 0;
+        $generated = [];
         $categories = $data['categories'] ?? [];
         $products = $data['products'] ?? [];
         try {
@@ -51,9 +59,13 @@ class Model extends \autoTable
                 $generator->generate($result, $randomizer);
                 try {
                     if ($this->create($data)->set('promocode', $result)->save($fire_events, false)) {
-                        if(is_array($categories)) $this->addCategoriesLinks($categories, $fire_events);
-                        if(is_array($products)) $this->addCategoriesLinks($products, $fire_events);
-                        $generated++;
+                        if (is_array($categories)) {
+                            $this->addCategoriesLinks($categories);
+                        }
+                        if (is_array($products)) {
+                            $this->addCategoriesLinks($products);
+                        }
+                        $generated[] = $result;
                     }
                 } catch (UniquePromocodeException $e) {
 
@@ -122,12 +134,12 @@ class Model extends \autoTable
         $promocode = is_scalar($promocode) ? trim($promocode) : '';
         $promocode = $this->escape($promocode);
         $sql = "SELECT `id` FROM {$this->makeTable($this->table)} WHERE BINARY `promocode`='{$promocode}'";
-        if($active) {
+        if ($active) {
             $now = date('Y-m-d H:i:s', $this->getTime(time()));
             $sql .= " AND `active`=1 AND (`begin` IS NULL OR `begin` <= '{$now}') AND (`end` IS NULL OR `end` >= '{$now}') AND (`limit` = 0 OR `limit` > `usages`)";
         }
         $q = $this->query($sql);
-        if($id = $this->modx->db->getValue($q)) {
+        if ($id = $this->modx->db->getValue($q)) {
             $this->edit($id);
         }
 
@@ -136,8 +148,8 @@ class Model extends \autoTable
 
     public function saveOrder($order)
     {
-        if($id = $this->getID()) {
-            $order = (int)$order;
+        if ($id = $this->getID()) {
+            $order = (int) $order;
             $data = $this->escape(json_encode($this->toArray(), JSON_UNESCAPED_UNICODE));
             $this->query("INSERT IGNORE INTO {$this->makeTable($this->orders_table)} (`pcid`, `order`, `data`) VALUES ({$id}, {$order}, '{$data}')");
             $this->query("UPDATE {$this->makeTable($this->table)} SET `usages` = `usages` + 1 WHERE `id`={$id}");
@@ -163,37 +175,21 @@ class Model extends \autoTable
 
     /**
      * @param  array  $links
-     * @param $fire_events
      * @return $this
      * @throws \Exception
      */
-    public function addCategoriesLinks(array $links = [], $fire_events = true)
+    public function addCategoriesLinks(array $links = [])
     {
         $links = \APIhelpers::cleanIDs($links);
         $id = $this->getID();
-        if ($id) {
-            $this->invokeEvent('OnBeforePromocodeLinksAdd', [
-                'promocode' => $this,
-                'links'     => &$links,
-                'type'      => 'category'
-            ]);
-            if ($links) {
-                $values = [];
-                foreach ($links as $link) {
-                    $values[] = "({$id}, {$link}, 0)";
-                }
-                $values = implode(',', $values);
-                $this->query("INSERT IGNORE INTO {$this->makeTable('promocodes_links')} (`pcid`, `link`, `type`) VALUES {$values}");
-                $result = $this->getInvokeEventResult('OnPromocodeLinksAdd', [
-                    'promocode' => $this,
-                    'links'     => $links,
-                    'type'      => 'category'
-                ], $fire_events);
-                if (!empty($result)) {
-                    $this->addMessages($result);
-                }
-                $this->categoriesLinks = $links;
+        if ($id && $links) {
+            $values = [];
+            foreach ($links as $link) {
+                $values[] = "({$id}, {$link}, 0)";
             }
+            $values = implode(',', $values);
+            $this->query("INSERT IGNORE INTO {$this->makeTable('promocodes_links')} (`pcid`, `link`, `type`) VALUES {$values}");
+            $this->categoriesLinks = $links;
         }
 
         return $this;
@@ -205,7 +201,7 @@ class Model extends \autoTable
      * @return $this
      * @throws \Exception
      */
-    public function addProductsLinks(array $links = [], $fire_events = true)
+    public function addProductsLinks(array $links = [])
     {
         $links = \APIhelpers::cleanIDs($links);
         $id = $this->getID();
@@ -234,10 +230,10 @@ class Model extends \autoTable
         if (!$this->get('promocode')) {
             $this->set('promocode', $this->getPromocode());
         }
-        if(empty($this->get('begin'))) {
+        if (empty($this->get('begin'))) {
             $this->eraseField('begin');
         }
-        if(empty($this->get('end'))) {
+        if (empty($this->get('end'))) {
             $this->eraseField('end');
         }
         $result = $this->getInvokeEventResult('OnBeforePromocodeSave', [
@@ -260,13 +256,10 @@ class Model extends \autoTable
                 }
             }
             if ($out = parent::save($fire_events, false)) {
-                $result = $this->getInvokeEventResult('OnPromocodeSave', [
+                $this->invokeEvent('OnPromocodeSave', [
                     'mode'      => $mode,
                     'promocode' => $this,
                 ], $fire_events);
-                if (!empty($result)) {
-                    $this->addMessages($result);
-                }
             }
         }
 
@@ -285,12 +278,9 @@ class Model extends \autoTable
                 $this->addMessages($result);
             } else {
                 $out = parent::delete($ids, $fire_events);
-                $result = $this->getInvokeEventResult('OnPromocodeDelete', [
+                $this->invokeEvent('OnPromocodeDelete', [
                     'ids' => $ids
                 ], $fire_events);
-                if (!empty($result)) {
-                    $this->addMessages($result);
-                }
             }
         }
 

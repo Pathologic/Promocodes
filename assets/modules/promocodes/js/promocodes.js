@@ -170,7 +170,7 @@ const Promocodes = (function () {
             let eventName = 'promocode-' + action + '.promocodes';
             let event = triggerEvent(initiator, eventName, data);
             if (event.isPrevented()) {
-                alert('Действие отменено обработчиком');
+
             } else {
                 data.action = action;
                 request(Commerce.params.path + 'promocodes/action', data, function(response){

@@ -114,8 +114,8 @@ class Manager
                         'cart'           => $cart,
                         'total'          => $total,
                         'promocode'      => $this->model,
-                        'discount_price' => $out['price'],
-                        'discount_title' => $out['title']
+                        'discount_price' => &$out['price'],
+                        'discount_title' => &$out['title']
                     ]);
 
                     return $out;

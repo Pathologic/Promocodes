@@ -240,7 +240,7 @@ class Controller
                 $FormLister->setValid(false);
                 $FormLister->addMessage('Не удалось сгенерировать промокоды');
             } else {
-                $FormLister->addMessage('Сгенерировано промокодов: ' . $result);
+                $FormLister->addMessage('Сгенерировано промокодов: ' . count($result));
             }
         };
 
@@ -277,6 +277,9 @@ class Controller
 
         $ids = isset($_POST['ids']) && is_array($_POST['ids']) ? $_POST['ids'] : [];
         $out['status'] = $this->model->delete($ids);
+        if(!$out['status']) {
+            $out['messages'] = $this->model->getMessages();
+        }
 
         return $out;
     }
