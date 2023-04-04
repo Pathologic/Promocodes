@@ -165,6 +165,8 @@
 
 ## Клиентские события
 
+
+
 ### promocode-register.promocodes
 Вызывается перед регистрацией промокода.
 
@@ -176,6 +178,12 @@
 
 ### promocode-remove-complete.promocodes
 Вызывается после отмены регистрации промокода.
+
+```
+document.addEventListener('promocode-register-complete.promocodes', function(e, params){
+    alert('Промокод добавлен');
+});
+```
 
 ## Работа с промокодами
 
