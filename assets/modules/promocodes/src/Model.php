@@ -324,7 +324,7 @@ class Model extends \autoTable
         ");
         $this->query("CREATE TABLE IF NOT EXISTS {$this->makeTable($this->orders_table)} (
             `pcid` INT(11) NOT NULL,
-            `order` INT(11) NOT NULL,
+            `order` INT(10) UNSIGNED NOT NULL,
             `data` TEXT NOT NULL,
             UNIQUE KEY `order` (`order`),
             CONSTRAINT `promocodes_orders_ibfk_1`
