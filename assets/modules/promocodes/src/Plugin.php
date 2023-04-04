@@ -2,6 +2,8 @@
 
 namespace Pathologic\Commerce\Promocodes;
 
+use Commerce\Carts\OrderCart;
+
 class Plugin
 {
     protected $modx;
@@ -30,7 +32,7 @@ class Plugin
                 } else {
                     ci()->promocodes->remove($instance);
                 }
-                $out['messages'] = ci()->promocode->getMessages();
+                $out['messages'] = ci()->promocodes->getMessages();
             }
 
             echo json_encode($out);
@@ -42,8 +44,9 @@ class Plugin
     {
         $modx = $this->modx;
         $params = $this->params;
-        if (!ci()->has('promocodes')) {
-            ci()->set('promocodes', function ($ci) use ($modx, $params) {
+        $ci = ci();
+        if (!$ci->has('promocodes')) {
+            $ci->set('promocodes', function ($ci) use ($modx, $params) {
                 return new Manager($modx, $params);
             });
         }
@@ -54,7 +57,8 @@ class Plugin
         $FL = $this->params['FL'];
         $cartInstance = $FL->getCFGDef('cartName', 'products');
         $promocode = ci()->promocodes->get($cartInstance);
-        if (!$promocode || !ci()->promocodes->register($promocode, 'order')) {
+        if(!$promocode) return;
+        if ($promocode && !ci()->promocodes->register($promocode, 'order')) {
             $messages = ci()->promocodes->getMessages();
             if (empty($messages)) {
                 $FL->addMessage('Промокод недействителен');
@@ -64,7 +68,16 @@ class Plugin
                 }
             }
             ci()->promocodes->remove($cartInstance);
+
             $this->params['prevent'] = true;
+        } else {
+            if (!ci()->carts->has('order')) {
+                $cart = new OrderCart($this->modx);
+                $cart->setItems($this->params['items']);
+                ci()->carts->addCart('order', $cart);
+            } else {
+                ci()->carts->getCart('order')->setItems($this->params['items']);
+            }
         }
     }
 
@@ -87,6 +100,10 @@ class Plugin
             if ($model->load($promocode)->getID()) {
                 $model->saveOrder($this->params['order_id']);
             }
+            if (ci()->carts->has('order')) {
+                ci()->carts->getCart('order')->clean();
+            }
+            ci()->promocodes->remove('order');
         }
     }
 }
