@@ -7,7 +7,7 @@
 * возможность ограничить применение промокода категориями товаров и отдельными товарами;
 * события для вмешательства в работу компонента.
 
-Спасибо за поддержку @sashabeep, @webtechmasterru, @raven2323, @mikhaelw
+Спасибо за поддержку <a href="https://github.com/sashabeep">@sashabeep<a>, <a href="https://github.com/webtechmasterru">@webtechmasterru</a>, <a href="https://github.com/raven2323">@raven2323</a>, <a href="https://github.com/mikhaelw">@mikhaelw</a>.
 
 ## Установка
 Установить, запустить модуль. Перед этим обязательно должен быть установлен Commerce. На страницах с формой для ввода промокода необходимо подключить скрипт assets/modules/promocodes/js/promocodes.js.
