@@ -15,7 +15,7 @@ $tpl = $tpl ?? '@CODE:<form data-promocodes class="[+class+]">
       <button class="btn btn-secondary mb-2" data-promocodes-action="remove">Отменить</button>
     </div>
   </div>
-</forms>';
+</form>';
 $DLTemplate = DLTemplate::getInstance($modx);
 $_templatePath = $DLTemplate->getTemplatePath();
 $_templateExtension = $DLTemplate->getTemplateExtension();
