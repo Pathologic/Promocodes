@@ -58,8 +58,9 @@
             color: #990404;
         }
 
-        #begin, #end {
+        #begin, #end, #searchBegin, #searchEnd {
             z-index: 100;
+            pointer-events: auto;
         }
 
         .help-block {
