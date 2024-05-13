@@ -41,9 +41,9 @@ class Controller
         $docs = $dl->getDocs();
         if($docs) {
             $ids = implode(',', array_keys($docs));
-            $q = $this->modx->db->query("SELECT DISTINCT `pcid` FROM {$this->modx->getFullTableName('promocodes_links')} WHERE `type` = 0 AND `pcid` IN (${ids})");
+            $q = $this->modx->db->query("SELECT DISTINCT `pcid` FROM {$this->modx->getFullTableName('promocodes_links')} WHERE `type` = 0 AND `pcid` IN ({$ids})");
             $categories = $this->modx->db->getColumn('pcid', $q) ?: [];
-            $q = $this->modx->db->query("SELECT DISTINCT `pcid` FROM {$this->modx->getFullTableName('promocodes_links')} WHERE `type` = 1 AND `pcid` IN (${ids})");
+            $q = $this->modx->db->query("SELECT DISTINCT `pcid` FROM {$this->modx->getFullTableName('promocodes_links')} WHERE `type` = 1 AND `pcid` IN ({$ids})");
             $products = $this->modx->db->getColumn('pcid', $q) ?: [];
             foreach ($docs as $id => &$doc) {
                 $doc['categories'] = in_array($id, $categories);
