@@ -63,9 +63,9 @@ const Module = {
             columns: [[
                 {field: 'select', checkbox: true},
                 {
-                    field: 'promocode', title: 'Промокод', width: 140, sortable: true, sanitize,
+                    field: 'promocode', title: 'Промокод', width: 140, sortable: true,
                     formatter: function (value, row) {
-                        return value + '<br><small>' + row.description + '</small>';
+                        return sanitize(value) + '<br><small>' + sanitize(row.description) + '</small>';
                     }
                 },
                 {
