@@ -1,5 +1,5 @@
 <?php
-include_once 'autoload.php';
+include_once MODX_BASE_PATH . 'assets/modules/promocodes/autoload.php';
 $instance = $params['instance'] ?? 'products';
 $class = $class ?? 'active';
 $tpl = $tpl ?? '@CODE:<form data-promocodes class="[+class+]">
