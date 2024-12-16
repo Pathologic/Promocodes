@@ -13,7 +13,7 @@ if (empty ($modx->config)) {
 if(!isset($_SESSION['mgrValidated'])){
     $modx->sendErrorPage();
 }
-include_once 'autoload.php';
+include_once MODX_BASE_PATH . 'assets/modules/promocodes/autoload.php';
 $modx->invokeEvent('OnManagerPageInit');
 
 $mode = (isset($_REQUEST['mode']) && is_scalar($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
