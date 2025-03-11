@@ -256,6 +256,17 @@ class Model extends \autoTable
                 }
             }
             if ($out = parent::save($fire_events, false)) {
+                $dateFields = [];
+                if (empty($this->get('begin'))) {
+                    $dateFields[] = '`begin` = null';
+                }
+                if (empty($this->get('end'))) {
+                    $dateFields[] = '`end` = null';
+                }
+                if($dateFields) {
+                    $dateFields = implode(',', $dateFields);
+                    $this->query("UPDATE {$this->makeTable($this->table)} SET {$dateFields} WHERE `id` = {$out}");
+                }
                 $this->invokeEvent('OnPromocodeSave', [
                     'mode'      => $mode,
                     'promocode' => $this,
