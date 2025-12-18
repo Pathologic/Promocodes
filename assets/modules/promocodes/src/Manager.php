@@ -106,7 +106,7 @@ class Manager
                 $type = $this->model->get('discount_type');
                 if ($total && $total >= $min_amount) {
                     $out = [
-                        'price' => -1 * (!$type ? ($total * $discount / 100) : ci()->currency->convertToActive($discount)),
+                        'price' => -1 * round(!$type ? ($total * $discount / 100) : ci()->currency->convertToActive($discount)),
                         'title' => \DLTemplate::getInstance($this->modx)->parseChunk(ci()->promocodes->getSetting('discountTitle'), $this->model->toArray())
                     ];
                     $this->modx->invokeEvent('OnPromocodeApply', [
