@@ -72,7 +72,7 @@ class Manager
         if (isset($_SESSION['promocodes'][$instance]) && $this->model->load($_SESSION['promocodes'][$instance])->getID()) {
             /** @var ProductsCart $cart */
             if ($cart = ci()->carts->getCart($instance)) {
-                $total = 0;
+                $total = false;
                 $prevent = false;
                 $result = $this->modx->invokeEvent('OnBeforePromocodeApply', [
                     'instance'  => $instance,
@@ -89,8 +89,9 @@ class Manager
                 }
                 $categoriesLinks = $this->model->getCategoriesLinks();
                 $productsLinks = $this->model->getProductsLinks();
-                if ($total > 0) {
+                if ($total !== false) {
                 } elseif (!empty($categoriesLinks) || !empty($productsLinks)) {
+                    $total = 0;
                     $items = $cart->getItems();
                     foreach ($items as $row => $item) {
                         $parents = array_values($this->modx->getParentIds($item['id']));
