@@ -74,7 +74,7 @@ class Manager
             if ($cart = ci()->carts->getCart($instance)) {
                 $total = 0;
                 $prevent = false;
-                $this->modx->invokeEvent('OnBeforePromocodeApply', [
+                $result = $this->modx->invokeEvent('OnBeforePromocodeApply', [
                     'instance'  => $instance,
                     'cart'      => $cart,
                     'total'     => &$total,
